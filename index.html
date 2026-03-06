@@ -1,196 +1,186 @@
 <!DOCTYPE html>
-
-<html lang="en" class="dark">
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI OPERATING SYSTEM</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>AI-OS</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<style>
-body{font-family:system-ui;background:#030712;color:#e5e7eb}
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-thumb{background:#374151;border-radius:5px}
-.loader{border:3px solid #1f2937;border-top:3px solid #0ea5e9;border-radius:50%;width:20px;height:20px;animation:spin 1s linear infinite}
-@keyframes spin{100%{transform:rotate(360deg)}}
-</style>
-
 </head>
 
-<body class="h-screen flex overflow-hidden">
+<body class="bg-slate-900 text-white h-screen flex">
 
 <!-- SIDEBAR -->
 
-<aside class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
-<div class="p-4 font-bold text-lg flex items-center gap-2">
-<i class="fa-solid fa-microchip text-sky-400"></i> AI-OS
-</div>
+<div class="w-64 bg-slate-800 p-4">
 
-<nav id="nav" class="flex-1 overflow-y-auto text-sm"></nav>
+<h1 class="text-xl font-bold mb-6">AI-OS</h1>
 
-<div class="p-4 border-t border-gray-800 text-xs">
-Status: <span class="text-green-400">Online</span>
+<button onclick="openTool('chat')" class="block w-full text-left py-2">AI Chat</button>
+
+<button onclick="openTool('image')" class="block w-full text-left py-2">Image Studio</button>
+
+<button onclick="openTool('settings')" class="block w-full text-left py-2">System Settings</button>
+
 </div>
-</aside>
 
 <!-- MAIN -->
 
-<main class="flex-1 flex flex-col">
+<div class="flex-1 flex flex-col">
 
-<header class="h-12 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6">
-<span id="title">AI Chat</span>
+<!-- TOP BAR -->
 
-<div class="flex items-center gap-3">
+<div class="p-3 bg-slate-800 flex justify-between">
 
-<select id="model" class="bg-gray-800 border border-gray-700 text-xs px-2 py-1 rounded">
-<option value="openrouter/auto">Auto</option>
-<option value="meta-llama/llama-3-8b-instruct:free">Llama3</option>
-<option value="google/gemma-7b-it:free">Gemma</option>
+<select id="modelSelect" class="bg-slate-700 p-2 rounded">
+
+<option value="openrouter/auto">Auto (Free)</option>
+
+<option value="meta-llama/llama-3-8b-instruct:free">Llama 3 8B (Free)</option>
+
+<option value="google/gemma-7b-it:free">Gemma 7B (Free)</option>
+
 </select>
 
-<button onclick="switchTab('settings')">
-<i class="fa-solid fa-gear"></i>
-</button>
-
 </div>
-</header>
+
+<!-- WORKSPACE -->
 
 <div id="workspace" class="flex-1 overflow-y-auto p-6"></div>
 
-<div class="bg-gray-900 border-t border-gray-800 p-3 flex gap-3">
-<textarea id="prompt" rows="2" class="flex-1 bg-gray-800 p-2 rounded"></textarea>
-<button onclick="run()" class="bg-sky-500 px-4 rounded">Run</button>
+<!-- PROMPT BAR -->
+
+<div class="p-4 bg-slate-800 flex gap-2">
+
+<textarea id="prompt" class="flex-1 p-3 rounded text-black" placeholder="Enter prompt"></textarea>
+
+<button onclick="runPrompt()" class="bg-blue-500 px-6 rounded">
+Execute
+</button>
+
 </div>
 
-</main>
+</div>
 
 <script>
 
-const state={
-apiKey:localStorage.getItem("api")||"",
-model:"openrouter/auto",
-tab:"chat",
-history:[]
+let currentTool="chat"
+
+let apiKey = localStorage.getItem("OPENROUTER_KEY") || ""
+
+let model = localStorage.getItem("MODEL") || "openrouter/auto"
+
+document.getElementById("modelSelect").value = model
+
+document.getElementById("modelSelect").onchange = e=>{
+model = e.target.value
+localStorage.setItem("MODEL",model)
 }
 
-const apps=[
-["chat","AI Chat","fa-comments"],
-["research","Research Engine","fa-magnifying-glass"],
-["image","Image Studio","fa-image"],
-["code","AI Coding IDE","fa-code"],
-["agents","Autonomous Agents","fa-network-wired"],
-["audio","Audio Engine","fa-music"],
-["settings","Settings","fa-gear"]
-]
+function openTool(tool){
 
-const nav=document.getElementById("nav")
+currentTool = tool
 
-apps.forEach(a=>{
-const btn=document.createElement("button")
-btn.className="w-full text-left px-4 py-3 hover:bg-gray-800"
-btn.innerHTML=`<i class="fa ${a[2]} w-5"></i> ${a[1]}`
-btn.onclick=()=>switchTab(a[0])
-nav.appendChild(btn)
-})
+if(tool==="settings"){
 
-function switchTab(t){
-state.tab=t
-title.innerText=t.toUpperCase()
-workspace.innerHTML=""
+workspace.innerHTML=`
+
+<div class="max-w-md">
+
+<h2 class="text-xl mb-3">API Settings</h2>
+
+<input id="apiInput"
+value="${apiKey}"
+placeholder="OpenRouter API Key"
+class="w-full p-2 text-black rounded mb-2">
+
+<button onclick="saveKey()"
+class="bg-blue-500 px-4 py-2 rounded">
+Save API Key
+</button>
+
+</div>
+`
+
+return
 }
 
-async function callAI(sys,user){
+workspace.innerHTML=`<h2 class="text-xl mb-4">${tool}</h2>`
 
-if(!state.apiKey)throw "API key missing"
+}
 
-const r=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+function saveKey(){
+
+apiKey=document.getElementById("apiInput").value
+
+localStorage.setItem("OPENROUTER_KEY",apiKey)
+
+alert("API Key Saved")
+
+}
+
+async function runPrompt(){
+
+const prompt=document.getElementById("prompt").value
+
+if(currentTool==="image"){
+
+const img=`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`
+
+workspace.innerHTML+=`<img src="${img}" class="mt-4 rounded">`
+
+return
+
+}
+
+if(!apiKey){
+
+alert("Add API key in settings")
+
+return
+
+}
+
+workspace.innerHTML+=`<div class="mb-2 text-green-400">You: ${prompt}</div>`
+
+const res = await fetch("https://openrouter.ai/api/v1/chat/completions",{
+
 method:"POST",
+
 headers:{
-"Authorization":"Bearer "+state.apiKey,
+"Authorization":"Bearer "+apiKey,
 "Content-Type":"application/json",
 "HTTP-Referer":location.origin,
-"X-Title":"AI OS"
+"X-Title":"AI-OS"
 },
+
 body:JSON.stringify({
-model:state.model,
+
+model:model,
+
 messages:[
-{role:"system",content:sys},
-...state.history,
-{role:"user",content:user}
+{role:"user",content:prompt}
 ]
+
 })
+
 })
 
-const d=await r.json()
-const text=d.choices?.[0]?.message?.content||"error"
+const data = await res.json()
 
-state.history.push({role:"user",content:user})
-state.history.push({role:"assistant",content:text})
+const text = data.choices?.[0]?.message?.content || "Error"
 
-return text
-}
-
-async function run(){
-
-const p=prompt.value
-prompt.value=""
-
-if(state.tab==="chat"){
-const r=await callAI("You are an AI OS assistant",p)
-workspace.innerHTML+=`<div class="bg-gray-900 p-4 rounded mb-4">${marked.parse(r)}</div>`
-}
-
-if(state.tab==="research"){
-const r=await callAI("Create a structured research report",p)
-workspace.innerHTML=marked.parse(r)
-}
-
-if(state.tab==="code"){
-const r=await callAI("Generate clean code only",p)
-workspace.innerHTML=`<pre class="bg-black p-4 rounded">${r}</pre>`
+workspace.innerHTML+=`<div class="mb-4 text-blue-400">AI: ${text}</div>`
 
 }
 
-if(state.tab==="image"){
-const url="https://image.pollinations.ai/prompt/"+encodeURIComponent(p)
-workspace.innerHTML+=`<img src="${url}" class="rounded mb-4">`
-}
-
-if(state.tab==="agents"){
-runAgents(p)
-}
-
-if(state.tab==="audio"){
-const u=new SpeechSynthesisUtterance(p)
-speechSynthesis.speak(u)
-workspace.innerHTML="Speaking..."
-}
-
-}
-
-async function runAgents(goal){
-
-workspace.innerHTML="Starting agents...<br>"
-
-const plan=await callAI("Break goal into steps",goal)
-workspace.innerHTML+="<b>Planner:</b>"+plan+"<br>"
-
-const research=await callAI("Research context",plan)
-workspace.innerHTML+="<b>Research:</b>"+research+"<br>"
-
-const code=await callAI("Create solution",research)
-workspace.innerHTML+="<b>Execution:</b>"+code+"<br>"
-
-}
-
-switchTab("chat")
+openTool("chat")
 
 </script>
+
 </body>
 </html>
 
