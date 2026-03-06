@@ -3,105 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Agent OS</title>
+<title>AI Studio</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
 
-<div id="loading" class="text-center p-10 text-xl">
-Loading AI Agent OS...
+<div id="loading" class="p-10 text-center text-xl">
+Loading AI Studio...
 </div>
 
-<div id="app" class="hidden flex flex-col min-h-screen">
+<div id="app" class="hidden flex flex-1">
 
-<header class="flex items-center justify-between p-3 border-b dark:border-gray-700 bg-white dark:bg-gray-800">
+<!-- SIDEBAR -->
 
-<h1 class="font-bold">AI Agent Workspace</h1>
+<div class="w-60 bg-white dark:bg-gray-800 p-4 border-r">
+
+<h1 class="font-bold mb-4">AI Studio</h1>
+
+<div class="space-y-2">
+
+<button onclick="openTool('chat')" class="block w-full text-left">AI Chat</button>
+
+<button onclick="openTool('image')" class="block w-full text-left">Image Generator</button>
+
+<button onclick="openTool('video')" class="block w-full text-left">Video Generator</button>
+
+<button onclick="openTool('agents')" class="block w-full text-left">AI Agents</button>
+
+<button onclick="openSettings()" class="block w-full text-left">Settings</button>
+
+</div>
+
+</div>
+
+<!-- MAIN WORKSPACE -->
+
+<div class="flex-1 flex flex-col">
+
+<div id="workspace" class="flex-1 overflow-y-auto p-4"></div>
+
+<div class="p-3 border-t bg-white dark:bg-gray-800">
 
 <div class="flex gap-2">
 
-<button id="runAgents" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
-Run Agents
-</button>
-
-<button id="settingsBtn" class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-sm">
-Settings
-</button>
-
-<button id="themeBtn" class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-sm">
-🌙
-</button>
-
-</div>
-</header>
-
-<div class="flex flex-1 overflow-hidden">
-
-<aside class="w-60 border-r dark:border-gray-700 p-3 bg-white dark:bg-gray-800">
-
-<h2 class="font-semibold mb-2">Agents</h2>
-
-<div class="space-y-2 text-sm">
-
-<div>🧠 Planner Agent</div>
-<div>🔎 Research Agent</div>
-<div>💻 Code Agent</div>
-<div>✍ Writer Agent</div>
-
-</div>
-
-</aside>
-
-<main class="flex-1 flex flex-col">
-
-<div id="workspace" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
-
-<div class="p-3 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
-
-<div class="flex gap-2">
-
-<textarea id="taskInput"
+<textarea id="prompt"
 rows="2"
-class="flex-1 border rounded p-2 text-sm"
-placeholder="Enter a task for the AI agents..."></textarea>
+class="flex-1 border rounded p-2"
+placeholder="Enter prompt..."></textarea>
 
-<button id="runTask"
-class="bg-blue-500 text-white px-4 rounded">
-Start
+<button onclick="runPrompt()" class="bg-blue-500 text-white px-4 rounded">
+Run
 </button>
 
 </div>
 
 </div>
 
-</main>
-
 </div>
 
 </div>
+
+<!-- SETTINGS -->
 
 <div id="settingsModal"
 class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
 
-<div class="bg-white dark:bg-gray-800 p-6 rounded w-80 space-y-3">
+<div class="bg-white p-6 rounded w-80">
 
-<h2 class="font-bold text-lg">API Settings</h2>
+<h2 class="font-bold mb-2">Settings</h2>
 
 <input id="apiKey"
-type="password"
 placeholder="OpenRouter API Key"
-class="w-full border rounded p-2 text-sm">
+class="w-full border p-2 mb-2">
 
-<input id="modelName"
-placeholder="Model name"
-class="w-full border rounded p-2 text-sm">
+<input id="model"
+value="deepseek/deepseek-r1:free"
+class="w-full border p-2 mb-2">
 
-<button id="saveSettings"
-class="bg-blue-500 text-white px-3 py-1 rounded">
+<button onclick="saveSettings()" class="bg-blue-500 text-white px-3 py-1 rounded">
 Save
 </button>
 
@@ -111,42 +94,131 @@ Save
 
 <script>
 
-const workspace=document.getElementById("workspace")
+let currentTool="chat"
 
 let apiKey=localStorage.getItem("apiKey")||""
 let model=localStorage.getItem("model")||"deepseek/deepseek-r1:free"
 
 document.getElementById("apiKey").value=apiKey
-document.getElementById("modelName").value=model
+document.getElementById("model").value=model
 
-function addBlock(title,text){
+function openTool(tool){
 
-const div=document.createElement("div")
+currentTool=tool
 
-div.className="bg-gray-200 dark:bg-gray-800 p-3 rounded"
+if(tool==="chat"){
+workspace.innerHTML="<h2 class='text-xl font-bold'>AI Chat</h2>"
+}
 
-div.innerHTML="<h3 class='font-semibold mb-1'>"+title+"</h3>"+marked.parse(text)
+if(tool==="image"){
+workspace.innerHTML="<h2 class='text-xl font-bold'>Image Generator</h2>"
+}
 
-workspace.appendChild(div)
+if(tool==="video"){
+workspace.innerHTML="<h2 class='text-xl font-bold'>Video Generator</h2>"
+}
 
-workspace.scrollTop=workspace.scrollHeight
-
-return div
+if(tool==="agents"){
+workspace.innerHTML="<h2 class='text-xl font-bold'>AI Agents</h2>"
+}
 
 }
 
-async function callAI(messages){
+async function runPrompt(){
+
+const prompt=document.getElementById("prompt").value
+
+if(currentTool==="chat"){
 
 const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+
 method:"POST",
+
 headers:{
 "Authorization":"Bearer "+apiKey,
 "Content-Type":"application/json"
 },
+
 body:JSON.stringify({
 model:model,
-messages:messages
+messages:[{role:"user",content:prompt}]
 })
+
+})
+
+const data=await res.json()
+
+workspace.innerHTML+=
+"<div class='p-2 bg-gray-200 rounded mt-2'>"+
+marked.parse(data.choices[0].message.content)+
+"</div>"
+
+}
+
+if(currentTool==="image"){
+
+const url="https://image.pollinations.ai/prompt/"+encodeURIComponent(prompt)
+
+workspace.innerHTML+=
+"<img src='"+url+"' class='mt-4 rounded shadow'>"
+
+}
+
+if(currentTool==="video"){
+
+workspace.innerHTML+=
+"<div class='mt-4'>Video generation APIs usually require paid services.</div>"
+
+}
+
+if(currentTool==="agents"){
+
+runAgents(prompt)
+
+}
+
+}
+
+async function runAgents(task){
+
+workspace.innerHTML=""
+
+const planner=await callAI("You are a task planner",task)
+addBlock("Planner Agent",planner)
+
+const research=await callAI("You are a research AI",task)
+addBlock("Research Agent",research)
+
+const coder=await callAI("You are a coding AI",task)
+addBlock("Code Agent",coder)
+
+const writer=await callAI("You summarize results",task)
+addBlock("Writer Agent",writer)
+
+}
+
+async function callAI(system,task){
+
+const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+
+method:"POST",
+
+headers:{
+"Authorization":"Bearer "+apiKey,
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+model:model,
+
+messages:[
+{role:"system",content:system},
+{role:"user",content:task}
+]
+
+})
+
 })
 
 const data=await res.json()
@@ -155,75 +227,30 @@ return data.choices[0].message.content
 
 }
 
-async function runAgents(){
+function addBlock(title,text){
 
-const task=document.getElementById("taskInput").value.trim()
-
-if(!task)return
-
-workspace.innerHTML=""
-
-const planner=await callAI([
-{role:"system",content:"You are an AI task planner."},
-{role:"user",content:"Break this task into steps: "+task}
-])
-
-addBlock("Planner Agent",planner)
-
-const research=await callAI([
-{role:"system",content:"You are a research AI."},
-{role:"user",content:"Research this task: "+task}
-])
-
-addBlock("Research Agent",research)
-
-const coder=await callAI([
-{role:"system",content:"You are a coding AI."},
-{role:"user",content:"Provide code or technical solution for: "+task}
-])
-
-addBlock("Code Agent",coder)
-
-const writer=await callAI([
-{role:"system",content:"You are a professional writer."},
-{role:"user",content:"Summarize final output for: "+task}
-])
-
-addBlock("Writer Agent",writer)
+workspace.innerHTML+=
+"<div class='bg-gray-200 p-3 rounded mt-3'>"+
+"<b>"+title+"</b><br>"+
+marked.parse(text)+
+"</div>"
 
 }
 
-document.getElementById("runTask").onclick=runAgents
-document.getElementById("runAgents").onclick=runAgents
-
-document.getElementById("settingsBtn").onclick=()=>{
-document.getElementById("settingsModal").classList.remove("hidden")
+function openSettings(){
+settingsModal.classList.remove("hidden")
 }
 
-document.getElementById("saveSettings").onclick=()=>{
+function saveSettings(){
 
 apiKey=document.getElementById("apiKey").value
-model=document.getElementById("modelName").value
+model=document.getElementById("model").value
 
 localStorage.setItem("apiKey",apiKey)
 localStorage.setItem("model",model)
 
-document.getElementById("settingsModal").classList.add("hidden")
+settingsModal.classList.add("hidden")
 
-}
-
-document.getElementById("themeBtn").onclick=()=>{
-
-document.documentElement.classList.toggle("dark")
-
-localStorage.setItem("theme",
-document.documentElement.classList.contains("dark")
-?"dark":"light")
-
-}
-
-if(localStorage.getItem("theme")==="dark"){
-document.documentElement.classList.add("dark")
 }
 
 document.getElementById("loading").style.display="none"
