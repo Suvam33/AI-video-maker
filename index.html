@@ -1,608 +1,196 @@
 <!DOCTYPE html>
+
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autonomous AI OS</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        gray: {
-                            850: '#1f2937',
-                            900: '#111827',
-                            950: '#030712',
-                        },
-                        primary: '#0ea5e9',
-                    }
-                }
-            }
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI OPERATING SYSTEM</title>
 
-    <!-- Marked.js for Markdown Rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #111827; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
-        
-        /* Markdown Styles */
-        .prose pre { background-color: #030712; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; border: 1px solid #1f2937; }
-        .prose code { color: #38bdf8; font-family: monospace; }
-        .prose h1, .prose h2, .prose h3 { color: #f9fafb; margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600; }
-        .prose p { margin-bottom: 1rem; }
-        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
-        .prose a { color: #0ea5e9; text-decoration: underline; }
-        
-        /* Loading Animation */
-        .loader { border: 3px solid #1f2937; border-top: 3px solid #0ea5e9; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-        /* Hide Scrollbar for clean UI but keep scrollability */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
+<style>
+body{font-family:system-ui;background:#030712;color:#e5e7eb}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-thumb{background:#374151;border-radius:5px}
+.loader{border:3px solid #1f2937;border-top:3px solid #0ea5e9;border-radius:50%;width:20px;height:20px;animation:spin 1s linear infinite}
+@keyframes spin{100%{transform:rotate(360deg)}}
+</style>
+
 </head>
-<body class="bg-gray-950 text-gray-100 h-screen w-screen flex overflow-hidden font-sans">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col z-10">
-        <div class="p-4 border-b border-gray-800 flex items-center gap-3">
-            <div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-white font-bold shadow-[0_0_10px_rgba(14,165,233,0.5)]">
-                <i class="fa-solid fa-microchip"></i>
-            </div>
-            <h1 class="font-bold text-lg tracking-wider">AI-OS</h1>
-        </div>
-        
-        <nav class="flex-1 overflow-y-auto py-4 px-2 space-y-1 no-scrollbar" id="sidebar-nav">
-            <!-- Navigation Items Injected via JS -->
-        </nav>
+<body class="h-screen flex overflow-hidden">
 
-        <div class="p-4 border-t border-gray-800 text-xs text-gray-500 flex justify-between items-center">
-            <span>Status: <span id="sys-status" class="text-green-500">Online</span></span>
-            <i class="fa-solid fa-signal text-green-500"></i>
-        </div>
-    </aside>
+<!-- SIDEBAR -->
 
-    <!-- Main Workspace -->
-    <main class="flex-1 flex flex-col relative">
-        <!-- Top Toolbar -->
-        <header class="h-14 bg-gray-900/80 backdrop-blur border-b border-gray-800 flex items-center justify-between px-6 z-10">
-            <div class="flex items-center gap-2 text-gray-400">
-                <i class="fa-solid fa-folder-open text-sm"></i>
-                <span id="current-workspace-title" class="font-medium text-gray-200">AI Chat</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <select id="model-selector" class="bg-gray-800 border border-gray-700 text-sm rounded px-3 py-1 text-gray-200 focus:outline-none focus:border-primary">
-                    <option value="openrouter/auto">Auto (Default)</option>
-                    <option value="meta-llama/llama-3-8b-instruct:free">Llama 3 8B (Free)</option>
-                    <option value="google/gemma-7b-it:free">Gemma 7B (Free)</option>
-                    <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
-                    <option value="openai/gpt-4o">GPT-4o</option>
-                </select>
-                <button onclick="switchTab('settings')" class="text-gray-400 hover:text-white transition"><i class="fa-solid fa-gear"></i></button>
-            </div>
-        </header>
+<aside class="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
+<div class="p-4 font-bold text-lg flex items-center gap-2">
+<i class="fa-solid fa-microchip text-sky-400"></i> AI-OS
+</div>
 
-        <!-- Dynamic Workspaces -->
-        <div class="flex-1 overflow-y-auto p-6 bg-gray-950" id="workspace-container">
-            <!-- App Panes will be dynamically toggled here -->
-        </div>
+<nav id="nav" class="flex-1 overflow-y-auto text-sm"></nav>
 
-        <!-- Bottom Prompt Console -->
-        <div class="bg-gray-900 border-t border-gray-800 p-4" id="prompt-console">
-            <div class="max-w-5xl mx-auto flex gap-3 items-end">
-                <div class="flex-1 bg-gray-800 rounded-xl border border-gray-700 focus-within:border-primary transition p-1">
-                    <textarea id="main-prompt" rows="2" class="w-full bg-transparent text-gray-100 px-3 py-2 resize-none focus:outline-none text-sm placeholder-gray-500" placeholder="Enter command, prompt, or goal... (Shift+Enter for newline)"></textarea>
-                </div>
-                <button id="btn-submit" class="h-[52px] px-6 bg-primary hover:bg-sky-400 text-white rounded-xl font-medium transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(14,165,233,0.3)]">
-                    <span>Execute</span>
-                    <i class="fa-solid fa-paper-plane text-sm"></i>
-                </button>
-            </div>
-        </div>
-    </main>
+<div class="p-4 border-t border-gray-800 text-xs">
+Status: <span class="text-green-400">Online</span>
+</div>
+</aside>
 
-    <!-- App Templates (Hidden structurally, made visible via JS) -->
-    <div id="templates" class="hidden">
-        
-        <!-- Settings Pane -->
-        <div id="pane-settings" class="max-w-2xl mx-auto space-y-6">
-            <h2 class="text-2xl font-bold mb-4">System Settings</h2>
-            <div class="bg-gray-900 p-6 rounded-xl border border-gray-800">
-                <h3 class="text-lg font-semibold mb-2">OpenRouter API Configuration</h3>
-                <p class="text-sm text-gray-400 mb-4">The AI-OS requires an OpenRouter API key to function. All processing is client-side.</p>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-1">API Key</label>
-                        <input type="password" id="setting-apikey" class="w-full bg-gray-800 border border-gray-700 rounded px-4 py-2 text-white focus:outline-none focus:border-primary" placeholder="sk-or-v1-...">
-                    </div>
-                    <button id="btn-save-settings" class="bg-primary hover:bg-sky-400 text-white px-4 py-2 rounded transition">Save Settings</button>
-                </div>
-            </div>
-        </div>
+<!-- MAIN -->
 
-        <!-- Chat Pane -->
-        <div id="pane-chat" class="max-w-4xl mx-auto flex flex-col gap-4 pb-10">
-            <div class="text-center text-gray-500 mt-10" id="chat-empty">Initialize conversation by typing below...</div>
-            <div id="chat-history" class="space-y-6"></div>
-        </div>
+<main class="flex-1 flex flex-col">
 
-        <!-- Research Pane -->
-        <div id="pane-research" class="max-w-5xl mx-auto">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
-                <h2 class="text-xl font-bold mb-2"><i class="fa-solid fa-magnifying-glass text-primary mr-2"></i>Autonomous Research Engine</h2>
-                <p class="text-sm text-gray-400">Enter a topic. The engine will generate questions, analyze context, and produce a structured markdown report.</p>
-            </div>
-            <div id="research-output" class="prose prose-invert max-w-none bg-gray-900 p-8 rounded-xl border border-gray-800 hidden"></div>
-        </div>
+<header class="h-12 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6">
+<span id="title">AI Chat</span>
 
-        <!-- Image Studio Pane -->
-        <div id="pane-image" class="max-w-5xl mx-auto">
-            <div class="grid grid-cols-2 gap-6" id="image-gallery">
-                <div class="col-span-2 text-center text-gray-500 mt-10" id="image-empty">Describe an image to generate...</div>
-            </div>
-        </div>
+<div class="flex items-center gap-3">
 
-        <!-- Coding IDE Pane -->
-        <div id="pane-code" class="h-full flex flex-col max-w-6xl mx-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold"><i class="fa-solid fa-code text-primary mr-2"></i>AI Coding IDE</h2>
-                <button id="btn-copy-code" class="text-gray-400 hover:text-white"><i class="fa-regular fa-copy"></i> Copy Code</button>
-            </div>
-            <textarea id="ide-editor" class="flex-1 w-full bg-[#0d1117] text-green-400 font-mono text-sm p-4 rounded-xl border border-gray-800 focus:outline-none focus:border-primary resize-none" placeholder="// AI generated code will appear here.&#10;// Describe your software goal in the console below..."></textarea>
-        </div>
+<select id="model" class="bg-gray-800 border border-gray-700 text-xs px-2 py-1 rounded">
+<option value="openrouter/auto">Auto</option>
+<option value="meta-llama/llama-3-8b-instruct:free">Llama3</option>
+<option value="google/gemma-7b-it:free">Gemma</option>
+</select>
 
-        <!-- Automation Agents Pane -->
-        <div id="pane-automation" class="max-w-5xl mx-auto flex flex-col h-full">
-            <h2 class="text-xl font-bold mb-4"><i class="fa-solid fa-network-wired text-primary mr-2"></i>Multi-Agent Orchestration</h2>
-            <div class="flex-1 bg-black rounded-xl border border-gray-800 p-4 font-mono text-xs overflow-y-auto" id="agent-logs">
-                <div class="text-gray-500">>> Waiting for operational goal...</div>
-            </div>
-        </div>
+<button onclick="switchTab('settings')">
+<i class="fa-solid fa-gear"></i>
+</button>
 
-        <!-- Trading Bot Pane -->
-        <div id="pane-trading" class="max-w-5xl mx-auto h-full flex flex-col">
-            <h2 class="text-xl font-bold mb-4"><i class="fa-solid fa-chart-line text-primary mr-2"></i>Algorithmic Trading Bot Builder</h2>
-            <div class="flex-1 grid grid-cols-3 gap-6">
-                <div class="col-span-1 bg-gray-900 border border-gray-800 p-4 rounded-xl flex flex-col gap-4">
-                    <h3 class="font-bold border-b border-gray-800 pb-2">Strategy Details</h3>
-                    <div id="trading-strategy" class="prose prose-invert text-sm flex-1 overflow-y-auto">No strategy generated yet.</div>
-                </div>
-                <div class="col-span-2 bg-[#0d1117] border border-gray-800 rounded-xl p-4">
-                    <pre><code id="trading-code" class="text-blue-300 font-mono text-sm"># Python Trading Logic will appear here</code></pre>
-                </div>
-            </div>
-        </div>
+</div>
+</header>
 
-        <!-- Voice & Music Studio Pane -->
-        <div id="pane-audio" class="max-w-3xl mx-auto space-y-6 text-center mt-10">
-            <i class="fa-solid fa-headphones text-6xl text-primary mb-4 block"></i>
-            <h2 class="text-2xl font-bold">Audio & Voice Synthesis</h2>
-            <p class="text-gray-400">Describe a melody or type text to be synthesized into speech. The browser's native Web Audio API and Speech Synthesis engine will execute the request.</p>
-            <div class="p-6 bg-gray-900 border border-gray-800 rounded-xl mt-6">
-                <div id="audio-status" class="text-lg font-mono text-green-400">Audio Engine: Standby</div>
-            </div>
-        </div>
+<div id="workspace" class="flex-1 overflow-y-auto p-6"></div>
 
-    </div>
+<div class="bg-gray-900 border-t border-gray-800 p-3 flex gap-3">
+<textarea id="prompt" rows="2" class="flex-1 bg-gray-800 p-2 rounded"></textarea>
+<button onclick="run()" class="bg-sky-500 px-4 rounded">Run</button>
+</div>
 
-    <!-- Core Logic -->
-    <script>
-        // --- 1. STATE & CONFIG ---
-        const state = {
-            apiKey: localStorage.getItem('aios_apikey') || '',
-            model: localStorage.getItem('aios_model') || 'openrouter/auto',
-            activeTab: 'chat',
-            isProcessing: false,
-            chatHistory: [],
-            audioCtx: null // Web Audio API context
-        };
+</main>
 
-        const apps = [
-            { id: 'chat', name: 'AI Chat', icon: 'fa-comments' },
-            { id: 'research', name: 'Research Mode', icon: 'fa-magnifying-glass' },
-            { id: 'image', name: 'Image Studio', icon: 'fa-image' },
-            { id: 'audio', name: 'Audio/Voice Studio', icon: 'fa-music' },
-            { id: 'code', name: 'AI Coding IDE', icon: 'fa-code' },
-            { id: 'trading', name: 'Trading Bot Builder', icon: 'fa-chart-line' },
-            { id: 'automation', name: 'Automation Agents', icon: 'fa-network-wired' },
-            { id: 'settings', name: 'System Settings', icon: 'fa-gear' }
-        ];
+<script>
 
-        // --- 2. INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            initSidebar();
-            initUI();
-            switchTab('chat');
-            
-            // Check API Key
-            if (!state.apiKey) {
-                setTimeout(() => switchTab('settings'), 500);
-            }
-        });
+const state={
+apiKey:localStorage.getItem("api")||"",
+model:"openrouter/auto",
+tab:"chat",
+history:[]
+}
 
-        function initSidebar() {
-            const nav = document.getElementById('sidebar-nav');
-            apps.forEach(app => {
-                const btn = document.createElement('button');
-                btn.className = `w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-left transition-colors duration-200 hover:bg-gray-800 text-gray-400`;
-                btn.id = `nav-${app.id}`;
-                btn.innerHTML = `<i class="fa-solid ${app.icon} w-5 text-center"></i> <span>${app.name}</span>`;
-                btn.onclick = () => switchTab(app.id);
-                nav.appendChild(btn);
-            });
-        }
+const apps=[
+["chat","AI Chat","fa-comments"],
+["research","Research Engine","fa-magnifying-glass"],
+["image","Image Studio","fa-image"],
+["code","AI Coding IDE","fa-code"],
+["agents","Autonomous Agents","fa-network-wired"],
+["audio","Audio Engine","fa-music"],
+["settings","Settings","fa-gear"]
+]
 
-        function initUI() {
-            // Load settings
-            document.getElementById('setting-apikey').value = state.apiKey;
-            document.getElementById('model-selector').value = state.model;
+const nav=document.getElementById("nav")
 
-            // Event Listeners
-            document.getElementById('btn-save-settings').addEventListener('click', saveSettings);
-            document.getElementById('model-selector').addEventListener('change', (e) => {
-                state.model = e.target.value;
-                localStorage.setItem('aios_model', state.model);
-            });
+apps.forEach(a=>{
+const btn=document.createElement("button")
+btn.className="w-full text-left px-4 py-3 hover:bg-gray-800"
+btn.innerHTML=`<i class="fa ${a[2]} w-5"></i> ${a[1]}`
+btn.onclick=()=>switchTab(a[0])
+nav.appendChild(btn)
+})
 
-            // Prompt Input Handlers
-            const promptInput = document.getElementById('main-prompt');
-            document.getElementById('btn-submit').addEventListener('click', handleExecution);
-            promptInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleExecution();
-                }
-            });
+function switchTab(t){
+state.tab=t
+title.innerText=t.toUpperCase()
+workspace.innerHTML=""
+}
 
-            // Copy Code Button
-            document.getElementById('btn-copy-code').addEventListener('click', () => {
-                const code = document.getElementById('ide-editor').value;
-                navigator.clipboard.writeText(code);
-                const btn = document.getElementById('btn-copy-code');
-                btn.innerHTML = `<i class="fa-solid fa-check text-green-500"></i> Copied`;
-                setTimeout(() => btn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy Code`, 2000);
-            });
-        }
+async function callAI(sys,user){
 
-        function switchTab(tabId) {
-            state.activeTab = tabId;
-            const app = apps.find(a => a.id === tabId);
-            
-            // Update Header
-            document.getElementById('current-workspace-title').innerText = app.name;
+if(!state.apiKey)throw "API key missing"
 
-            // Update Sidebar Highlights
-            document.querySelectorAll('#sidebar-nav button').forEach(btn => {
-                btn.classList.remove('bg-gray-800', 'text-white', 'border-l-4', 'border-primary');
-                btn.classList.add('text-gray-400');
-            });
-            const activeBtn = document.getElementById(`nav-${tabId}`);
-            activeBtn.classList.add('bg-gray-800', 'text-white', 'border-l-4', 'border-primary');
-            activeBtn.classList.remove('text-gray-400');
+const r=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+method:"POST",
+headers:{
+"Authorization":"Bearer "+state.apiKey,
+"Content-Type":"application/json",
+"HTTP-Referer":location.origin,
+"X-Title":"AI OS"
+},
+body:JSON.stringify({
+model:state.model,
+messages:[
+{role:"system",content:sys},
+...state.history,
+{role:"user",content:user}
+]
+})
+})
 
-            // Manage Workspaces
-            const container = document.getElementById('workspace-container');
-            container.innerHTML = ''; // Clear current
-            
-            const template = document.getElementById(`pane-${tabId}`);
-            if (template) {
-                container.appendChild(template.cloneNode(true));
-            }
+const d=await r.json()
+const text=d.choices?.[0]?.message?.content||"error"
 
-            // Hide/Show prompt console based on tab
-            const consoleEl = document.getElementById('prompt-console');
-            if (tabId === 'settings') {
-                consoleEl.classList.add('hidden');
-            } else {
-                consoleEl.classList.remove('hidden');
-                document.getElementById('main-prompt').focus();
-            }
-        }
+state.history.push({role:"user",content:user})
+state.history.push({role:"assistant",content:text})
 
-        function saveSettings() {
-            const key = document.getElementById('setting-apikey').value.trim();
-            if (key) {
-                state.apiKey = key;
-                localStorage.setItem('aios_apikey', key);
-                const btn = document.getElementById('btn-save-settings');
-                btn.innerText = "Saved!";
-                btn.classList.replace('bg-primary', 'bg-green-500');
-                setTimeout(() => {
-                    btn.innerText = "Save Settings";
-                    btn.classList.replace('bg-green-500', 'bg-primary');
-                }, 2000);
-            }
-        }
+return text
+}
 
-        // --- 3. AI GATEWAY (OPENROUTER) ---
-        async function callAI(systemPrompt, userPrompt, jsonMode = false) {
-            if (!state.apiKey) throw new Error("API Key missing. Go to Settings.");
-            
-            try {
-                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${state.apiKey}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: state.model,
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: userPrompt }
-                        ],
-                        response_format: jsonMode ? { type: "json_object" } : undefined
-                    })
-                });
+async function run(){
 
-                if (!response.ok) {
-                    const err = await response.json();
-                    throw new Error(err.error?.message || `HTTP ${response.status}`);
-                }
+const p=prompt.value
+prompt.value=""
 
-                const data = await response.json();
-                return data.choices[0].message.content;
-            } catch (error) {
-                console.error("AI Gateway Error:", error);
-                throw error;
-            }
-        }
+if(state.tab==="chat"){
+const r=await callAI("You are an AI OS assistant",p)
+workspace.innerHTML+=`<div class="bg-gray-900 p-4 rounded mb-4">${marked.parse(r)}</div>`
+}
 
-        // --- 4. EXECUTION ROUTER ---
-        async function handleExecution() {
-            const inputEl = document.getElementById('main-prompt');
-            const prompt = inputEl.value.trim();
-            if (!prompt || state.isProcessing) return;
+if(state.tab==="research"){
+const r=await callAI("Create a structured research report",p)
+workspace.innerHTML=marked.parse(r)
+}
 
-            inputEl.value = '';
-            toggleProcessing(true);
+if(state.tab==="code"){
+const r=await callAI("Generate clean code only",p)
+workspace.innerHTML=`<pre class="bg-black p-4 rounded">${r}</pre>`
 
-            try {
-                switch(state.activeTab) {
-                    case 'chat': await runChat(prompt); break;
-                    case 'research': await runResearch(prompt); break;
-                    case 'image': await runImageGeneration(prompt); break;
-                    case 'code': await runCodeGeneration(prompt); break;
-                    case 'trading': await runTradingBuilder(prompt); break;
-                    case 'automation': await runMultiAgentOrchestration(prompt); break;
-                    case 'audio': await runAudioGeneration(prompt); break;
-                }
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                toggleProcessing(false);
-            }
-        }
+}
 
-        function toggleProcessing(isProcessing) {
-            state.isProcessing = isProcessing;
-            const btn = document.getElementById('btn-submit');
-            if (isProcessing) {
-                btn.innerHTML = `<div class="loader"></div>`;
-                btn.disabled = true;
-            } else {
-                btn.innerHTML = `<span>Execute</span> <i class="fa-solid fa-paper-plane text-sm"></i>`;
-                btn.disabled = false;
-            }
-        }
+if(state.tab==="image"){
+const url="https://image.pollinations.ai/prompt/"+encodeURIComponent(p)
+workspace.innerHTML+=`<img src="${url}" class="rounded mb-4">`
+}
 
-        function showError(msg) {
-            alert(`Execution Error: ${msg}\n\nPlease check your API key and network connection.`);
-        }
+if(state.tab==="agents"){
+runAgents(p)
+}
 
-        // --- 5. MODULE IMPLEMENTATIONS ---
+if(state.tab==="audio"){
+const u=new SpeechSynthesisUtterance(p)
+speechSynthesis.speak(u)
+workspace.innerHTML="Speaking..."
+}
 
-        // A. Chat
-        async function runChat(prompt) {
-            const historyEl = document.getElementById('chat-history');
-            document.getElementById('chat-empty')?.remove();
+}
 
-            // Append User
-            historyEl.innerHTML += `
-                <div class="flex gap-4">
-                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0"><i class="fa-solid fa-user text-sm"></i></div>
-                    <div class="bg-gray-800 px-4 py-3 rounded-2xl rounded-tl-none text-sm text-gray-200 max-w-[85%]">${prompt}</div>
-                </div>`;
-            
-            // Append AI placeholder
-            const id = 'msg-' + Date.now();
-            historyEl.innerHTML += `
-                <div class="flex gap-4">
-                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 text-white"><i class="fa-solid fa-robot text-sm"></i></div>
-                    <div class="prose prose-invert prose-sm max-w-[85%] bg-gray-900 border border-gray-800 px-4 py-3 rounded-2xl rounded-tr-none" id="${id}">
-                        <div class="flex space-x-1 items-center h-5"><div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div><div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-100"></div><div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-200"></div></div>
-                    </div>
-                </div>`;
-            
-            historyEl.parentElement.scrollTop = historyEl.parentElement.scrollHeight;
+async function runAgents(goal){
 
-            const sysPrompt = "You are the core intelligence of an Autonomous AI Operating System. Be concise, helpful, and highly technical.";
-            const response = await callAI(sysPrompt, prompt);
-            
-            document.getElementById(id).innerHTML = marked.parse(response);
-            historyEl.parentElement.scrollTop = historyEl.parentElement.scrollHeight;
-        }
+workspace.innerHTML="Starting agents...<br>"
 
-        // B. Research Engine
-        async function runResearch(prompt) {
-            const outEl = document.getElementById('research-output');
-            outEl.classList.remove('hidden');
-            outEl.innerHTML = `<div class="flex items-center gap-3 text-primary"><div class="loader"></div> <span>Researching: ${prompt}</span></div>`;
+const plan=await callAI("Break goal into steps",goal)
+workspace.innerHTML+="<b>Planner:</b>"+plan+"<br>"
 
-            const sysPrompt = `You are an Autonomous Research Agent. 
-            Analyze the user's topic. Provide a comprehensive, structured Markdown report.
-            Include: 1. Executive Summary, 2. Key Findings, 3. Technical Details, 4. Conclusion.`;
-            
-            const response = await callAI(sysPrompt, prompt);
-            outEl.innerHTML = marked.parse(response);
-        }
+const research=await callAI("Research context",plan)
+workspace.innerHTML+="<b>Research:</b>"+research+"<br>"
 
-        // C. Image Studio
-        async function runImageGeneration(prompt) {
-            document.getElementById('image-empty')?.remove();
-            const gallery = document.getElementById('image-gallery');
+const code=await callAI("Create solution",research)
+workspace.innerHTML+="<b>Execution:</b>"+code+"<br>"
 
-            // 1. Optimize Prompt via AI
-            const sysPrompt = "You are an expert Midjourney prompt engineer. Convert the user's idea into a highly detailed, comma-separated image generation prompt. Just return the prompt, no conversational text.";
-            const optimizedPrompt = await callAI(sysPrompt, prompt);
+}
 
-            // 2. Call Pollinations URL
-            const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(optimizedPrompt)}?width=1024&height=1024&nologo=true`;
-            
-            const imgCard = document.createElement('div');
-            imgCard.className = "bg-gray-900 p-2 rounded-xl border border-gray-800 flex flex-col gap-2 shadow-lg";
-            imgCard.innerHTML = `
-                <div class="aspect-square bg-gray-800 rounded-lg overflow-hidden relative">
-                    <img src="${url}" alt="${prompt}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition flex items-center justify-center">
-                        <a href="${url}" target="_blank" class="bg-primary text-white px-4 py-2 rounded-lg text-sm">Open Full</a>
-                    </div>
-                </div>
-                <p class="text-xs text-gray-400 truncate px-2" title="${optimizedPrompt}">${optimizedPrompt}</p>
-            `;
-            gallery.prepend(imgCard);
-        }
+switchTab("chat")
 
-        // D. Coding IDE
-        async function runCodeGeneration(prompt) {
-            const editor = document.getElementById('ide-editor');
-            editor.value = "// Compiling requirements and generating code...\n// Please wait...";
-
-            const sysPrompt = `You are a Senior Software Architect. Generate pure code based on the user's request. 
-            Do NOT use markdown code blocks (\`\`\`). Just return the raw code. Include brief comments.`;
-            
-            const code = await callAI(sysPrompt, prompt);
-            editor.value = code;
-        }
-
-        // E. Trading Bot Builder
-        async function runTradingBuilder(prompt) {
-            document.getElementById('trading-strategy').innerHTML = `<div class="loader mb-2"></div> Analyzing market logic...`;
-            document.getElementById('trading-code').innerText = "# Generating algorithm...";
-
-            // 1. Generate Strategy
-            const stratPrompt = "You are a quantitative analyst. Summarize a trading strategy based on this prompt. Output valid Markdown.";
-            const strategy = await callAI(stratPrompt, prompt);
-            document.getElementById('trading-strategy').innerHTML = marked.parse(strategy);
-
-            // 2. Generate Python Code
-            const codePrompt = "You are a Python Quant Developer. Write a trading bot script (using ccxt or pandas) for this strategy. No markdown, just raw python code.";
-            const code = await callAI(codePrompt, prompt);
-            document.getElementById('trading-code').innerText = code;
-        }
-
-        // F. Audio / Voice Studio (Web APIs)
-        async function runAudioGeneration(prompt) {
-            const status = document.getElementById('audio-status');
-            status.innerText = "Analyzing audio intent...";
-
-            const sysPrompt = `Classify the user's audio request. Reply ONLY with a JSON object containing {"type": "voice" or "music", "content": "text to speak" or "musical mood"}.`;
-            const intentRaw = await callAI(sysPrompt, prompt);
-            
-            try {
-                // simple json parse fallback
-                const intentObj = JSON.parse(intentRaw.match(/\{.*\}/s)?.[0] || '{"type":"voice","content":"Error parsing intent"}');
-                
-                if (intentObj.type === 'voice') {
-                    status.innerText = `Synthesizing Speech: "${intentObj.content}"`;
-                    const utterance = new SpeechSynthesisUtterance(intentObj.content);
-                    utterance.pitch = 1;
-                    utterance.rate = 1;
-                    window.speechSynthesis.speak(utterance);
-                    utterance.onend = () => status.innerText = "Audio Engine: Standby";
-                } else {
-                    status.innerText = `Generating Sequence for mood: ${intentObj.content}`;
-                    playArpeggio();
-                    setTimeout(() => status.innerText = "Audio Engine: Standby", 3000);
-                }
-            } catch (e) {
-                status.innerText = "Failed to parse audio intent.";
-            }
-        }
-
-        function playArpeggio() {
-            if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const ctx = state.audioCtx;
-            const now = ctx.currentTime;
-            
-            const notes = [261.63, 329.63, 392.00, 523.25]; // C E G C
-            notes.forEach((freq, i) => {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                
-                osc.type = 'sine';
-                osc.frequency.value = freq;
-                
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                
-                osc.start(now + i * 0.2);
-                gain.gain.setValueAtTime(0, now + i * 0.2);
-                gain.gain.linearRampToValueAtTime(0.5, now + i * 0.2 + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.2 + 0.5);
-                osc.stop(now + i * 0.2 + 0.5);
-            });
-        }
-
-        // G. Automation Multi-Agent Orchestration
-        async function runMultiAgentOrchestration(goal) {
-            const logs = document.getElementById('agent-logs');
-            logs.innerHTML = ''; // clear
-            
-            const logMsg = (agent, msg, isSystem=false) => {
-                const color = isSystem ? 'text-green-500' : 'text-primary';
-                logs.innerHTML += `<div class="mb-2"><span class="${color} font-bold">[${agent}]</span> <span class="text-gray-300">${msg.replace(/\n/g, '<br>')}</span></div>`;
-                logs.scrollTop = logs.scrollHeight;
-            };
-
-            logMsg('SYSTEM', `Initializing Autonomous Workflow for goal: "${goal}"`, true);
-
-            try {
-                // Agent 1: Planner
-                logMsg('SYSTEM', 'Spinning up Planner Agent...', true);
-                const plannerPrompt = `You are a Planner Agent. Break this goal into exactly 3 concise steps. Goal: ${goal}`;
-                const plan = await callAI(plannerPrompt, goal);
-                logMsg('Planner Agent', plan);
-
-                // Agent 2: Research
-                logMsg('SYSTEM', 'Spinning up Research Agent...', true);
-                const researchPrompt = `You are a Research Agent. Based on this plan, output a brief paragraph of technical context required: \n${plan}`;
-                const research = await callAI(researchPrompt, plan);
-                logMsg('Research Agent', research);
-
-                // Agent 3: Coder/Executor
-                logMsg('SYSTEM', 'Spinning up Execution Agent...', true);
-                const execPrompt = `You are an Execution Agent. Based on the research, generate a short pseudo-code or command sequence to solve the goal: \n${research}`;
-                const execution = await callAI(execPrompt, research);
-                logMsg('Execution Agent', execution);
-
-                // Agent 4: Supervisor
-                logMsg('SYSTEM', 'Spinning up Supervisor Agent...', true);
-                const supPrompt = `You are a Supervisor. Summarize the successful execution of this workflow in one sentence. Context: ${execution}`;
-                const summary = await callAI(supPrompt, execution);
-                logMsg('Supervisor Agent', summary);
-
-                logMsg('SYSTEM', 'Workflow Completed Successfully.', true);
-
-            } catch(e) {
-                logMsg('SYSTEM-ERROR', e.message, true);
-                throw e;
-            }
-        }
-    </script>
+</script>
 </body>
 </html>
+
