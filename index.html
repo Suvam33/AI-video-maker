@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Studio</title>
+<title>AI SUPER STUDIO v2</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -12,35 +12,35 @@
 
 <body class="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
 
-<div id="loading" class="p-10 text-center text-xl">
-Loading AI Studio...
+<div id="loading" class="text-center p-10 text-xl">
+Loading AI SUPER STUDIO...
 </div>
 
 <div id="app" class="hidden flex flex-1">
 
 <!-- SIDEBAR -->
 
-<div class="w-60 bg-white dark:bg-gray-800 p-4 border-r">
+<div class="w-64 bg-white dark:bg-gray-800 p-4 border-r">
 
-<h1 class="font-bold mb-4">AI Studio</h1>
+<h1 class="font-bold mb-4 text-lg">AI SUPER STUDIO</h1>
 
-<div class="space-y-2">
+<div class="space-y-2 text-sm">
 
 <button onclick="openTool('chat')" class="block w-full text-left">AI Chat</button>
-
 <button onclick="openTool('image')" class="block w-full text-left">Image Generator</button>
-
 <button onclick="openTool('video')" class="block w-full text-left">Video Generator</button>
-
-<button onclick="openTool('agents')" class="block w-full text-left">AI Agents</button>
-
+<button onclick="openTool('voice')" class="block w-full text-left">Voice Generator</button>
+<button onclick="openTool('music')" class="block w-full text-left">Music Generator</button>
+<button onclick="openTool('code')" class="block w-full text-left">AI Coding IDE</button>
+<button onclick="openTool('trading')" class="block w-full text-left">Trading Bot Builder</button>
+<button onclick="openTool('agents')" class="block w-full text-left">Multi-Agent System</button>
 <button onclick="openSettings()" class="block w-full text-left">Settings</button>
 
 </div>
 
 </div>
 
-<!-- MAIN WORKSPACE -->
+<!-- WORKSPACE -->
 
 <div class="flex-1 flex flex-col">
 
@@ -106,20 +106,13 @@ function openTool(tool){
 
 currentTool=tool
 
-if(tool==="chat"){
-workspace.innerHTML="<h2 class='text-xl font-bold'>AI Chat</h2>"
-}
+workspace.innerHTML="<h2 class='text-xl font-bold mb-3'>"+tool.toUpperCase()+"</h2>"
 
-if(tool==="image"){
-workspace.innerHTML="<h2 class='text-xl font-bold'>Image Generator</h2>"
-}
-
-if(tool==="video"){
-workspace.innerHTML="<h2 class='text-xl font-bold'>Video Generator</h2>"
-}
-
-if(tool==="agents"){
-workspace.innerHTML="<h2 class='text-xl font-bold'>AI Agents</h2>"
+if(tool==="code"){
+workspace.innerHTML+=`
+<textarea id="codeEditor" class="w-full h-64 border p-2">
+# Write code or ask AI to generate
+</textarea>`
 }
 
 }
@@ -129,52 +122,48 @@ async function runPrompt(){
 const prompt=document.getElementById("prompt").value
 
 if(currentTool==="chat"){
-
-const res=await fetch("https://openrouter.ai/api/v1/chat/completions",{
-
-method:"POST",
-
-headers:{
-"Authorization":"Bearer "+apiKey,
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-model:model,
-messages:[{role:"user",content:prompt}]
-})
-
-})
-
-const data=await res.json()
-
-workspace.innerHTML+=
-"<div class='p-2 bg-gray-200 rounded mt-2'>"+
-marked.parse(data.choices[0].message.content)+
-"</div>"
-
+const text=await callAI("You are a helpful AI assistant",prompt)
+addBlock("AI",text)
 }
 
 if(currentTool==="image"){
-
 const url="https://image.pollinations.ai/prompt/"+encodeURIComponent(prompt)
-
-workspace.innerHTML+=
-"<img src='"+url+"' class='mt-4 rounded shadow'>"
-
+workspace.innerHTML+=`<img src="${url}" class="mt-4 rounded shadow">`
 }
 
 if(currentTool==="video"){
+workspace.innerHTML+=`
+<div class="p-3 bg-yellow-100 rounded">
+Video generation requires external APIs (Runway, Pika, Replicate).
+Integrate your API endpoint here.
+</div>`
+}
 
-workspace.innerHTML+=
-"<div class='mt-4'>Video generation APIs usually require paid services.</div>"
+if(currentTool==="voice"){
+const speech=new SpeechSynthesisUtterance(prompt)
+speechSynthesis.speak(speech)
+workspace.innerHTML+="Voice playing..."
+}
 
+if(currentTool==="music"){
+generateMusic()
+}
+
+if(currentTool==="code"){
+const text=await callAI("You are a senior software engineer",prompt)
+document.getElementById("codeEditor").value=text
+}
+
+if(currentTool==="trading"){
+const text=await callAI(
+"You are an expert crypto trading bot developer",
+prompt
+)
+addBlock("Trading Bot Strategy",text)
 }
 
 if(currentTool==="agents"){
-
 runAgents(prompt)
-
 }
 
 }
@@ -186,10 +175,10 @@ workspace.innerHTML=""
 const planner=await callAI("You are a task planner",task)
 addBlock("Planner Agent",planner)
 
-const research=await callAI("You are a research AI",task)
+const research=await callAI("You are a research agent",task)
 addBlock("Research Agent",research)
 
-const coder=await callAI("You are a coding AI",task)
+const coder=await callAI("You are a coding agent",task)
 addBlock("Code Agent",coder)
 
 const writer=await callAI("You summarize results",task)
@@ -209,31 +198,48 @@ headers:{
 },
 
 body:JSON.stringify({
-
 model:model,
-
 messages:[
 {role:"system",content:system},
 {role:"user",content:task}
 ]
-
 })
 
 })
 
 const data=await res.json()
 
-return data.choices[0].message.content
+return data.choices?.[0]?.message?.content||"Error"
 
 }
 
 function addBlock(title,text){
 
-workspace.innerHTML+=
-"<div class='bg-gray-200 p-3 rounded mt-3'>"+
-"<b>"+title+"</b><br>"+
-marked.parse(text)+
-"</div>"
+workspace.innerHTML+=`
+<div class="bg-gray-200 p-3 rounded mt-3">
+<b>${title}</b><br>
+${marked.parse(text)}
+</div>`
+
+}
+
+function generateMusic(){
+
+const ctx=new AudioContext()
+
+const osc=ctx.createOscillator()
+
+osc.type="sine"
+
+osc.frequency.value=440
+
+osc.connect(ctx.destination)
+
+osc.start()
+
+setTimeout(()=>osc.stop(),2000)
+
+workspace.innerHTML+="Playing generated tone..."
 
 }
 
