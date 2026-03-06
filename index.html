@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -31,27 +32,21 @@
 
 <div class="flex-1 flex flex-col">
 
-<!-- TOP BAR -->
-
 <div class="p-3 bg-slate-800 flex justify-between">
 
 <select id="modelSelect" class="bg-slate-700 p-2 rounded">
 
 <option value="openrouter/auto">Auto (Free)</option>
 
-<option value="meta-llama/llama-3-8b-instruct:free">Llama 3 8B (Free)</option>
+<option value="meta-llama/llama-3-8b-instruct:free">Llama 3 8B</option>
 
-<option value="google/gemma-7b-it:free">Gemma 7B (Free)</option>
+<option value="google/gemma-7b-it:free">Gemma 7B</option>
 
 </select>
 
 </div>
 
-<!-- WORKSPACE -->
-
 <div id="workspace" class="flex-1 overflow-y-auto p-6"></div>
-
-<!-- PROMPT BAR -->
 
 <div class="p-4 bg-slate-800 flex gap-2">
 
@@ -66,6 +61,8 @@ Execute
 </div>
 
 <script>
+
+let workspace = document.getElementById("workspace")
 
 let currentTool="chat"
 
@@ -86,11 +83,9 @@ currentTool = tool
 
 if(tool==="settings"){
 
-workspace.innerHTML=`
+workspace.innerHTML = `
 
-<div class="max-w-md">
-
-<h2 class="text-xl mb-3">API Settings</h2>
+<h2 class="text-xl mb-4">System Settings</h2>
 
 <input id="apiInput"
 value="${apiKey}"
@@ -102,19 +97,18 @@ class="bg-blue-500 px-4 py-2 rounded">
 Save API Key
 </button>
 
-</div>
 `
 
 return
 }
 
-workspace.innerHTML=`<h2 class="text-xl mb-4">${tool}</h2>`
+workspace.innerHTML = `<h2 class="text-xl mb-4">${tool}</h2>`
 
 }
 
 function saveKey(){
 
-apiKey=document.getElementById("apiInput").value
+apiKey = document.getElementById("apiInput").value
 
 localStorage.setItem("OPENROUTER_KEY",apiKey)
 
@@ -138,7 +132,7 @@ return
 
 if(!apiKey){
 
-alert("Add API key in settings")
+alert("Add API key in System Settings")
 
 return
 
